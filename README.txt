@@ -1,45 +1,43 @@
-Do at least ONE of the following tasks: refactor is mandatory. Write tests is optional, will be good bonus to see it. 
-Please do not invest more than 2-4 hours on this.
-Upload your results to a Github repo, for easier sharing and reviewing.
+My Thoughts:
 
-Thank you and good luck!
+- Overall code is looking good as repository feature is applied that
+  makes the code clean and seperate business logic with no more complex
+  things in the controllers class. Using repository in laravel is the way
+  to clean up the controller process so the code performance will be good
 
+- I can see that you used the resource routing and controllers so you have
+  some already available methods in controller but also you have placed other
+  methods too. its not a good practice to use methods other than crud methods in
+  resource controller because we have different routes format for resource controllers
 
+- A controller class should contain only 8-10 functions with no duplication of the code
 
-Code to refactor
-=================
-1) app/Http/Controllers/BookingController.php
-2) app/Repository/BookingRepository.php
+Code Change Recommendation：
 
-Code to write tests (optional)
-=====================
-3) App/Helpers/TeHelper.php method willExpireAt
-4) App/Repository/UserRepository.php, method createOrUpdate
+1) BookingController.php:
 
+- in function index（）， we don't need to assign a variable in if condition like
+  "$user_id = $request->get('user_id')". by this way you are consuming the memory
+  that we don't need anymore. we can simply check in if condition like "if($request->user_id)"
+  that is more clean way to check
+- $response = $this->repository->getUsersJobs($user_id);, this line calling a repository function if
+  you look at this function in repository then there is conditionally based handling occurring like if
+  and else if what about if controls could not enter into either of if block? what you will return in
+  response? so there's a else block should be too there to handle exceptional cases.
+- There's in the code you are getting values from env directly. first you should make a reference in
+   config file to get values from env then you should call config values to approach env. in some cases,
+   directly calling env could not work
+- by calling getAll repo function you are passing request object to that function but in repository you
+  are again declaring Request $request object which is not correct you are receiving everything in parameter
+  so no need to declare it
+- function should not exceed more than 10 lines for better performance. try to make small functions to call into
+  your main function and increase the readability of code
+- just return response  in if block if it doesn't need to check other then return response line should be not at the end
+-  array_except($data, ['_token', 'submit']), you can use laravel of ignoring attributes like $request->except()
+- this controller contains the code that is somehow same so you dont need to implement each method. you can create
+  trait for this controller class and define methods there to avoid any repetition in future
 
-----------------------------
+2) BookingRepository.php:
 
-What I expect in your repo:
-
-X. A readme with:   Your thoughts about the code. What makes it amazing code. Or what makes it ok code. Or what makes it terrible code. How would you have done it. Thoughts on formatting, structure, logic.. The more details that you can provide about the code (what's terrible about it or/and what is good about it) the easier for us to assess your coding style, mentality etc
-
-And 
-
-Y.  Refactor it if you feel it needs refactoring. The more love you put into it. The easier for us to asses your thoughts, code principles etc
-
-
-IMPORTANT: Make two commits. First commit with original code. Second with your refactor so we can easily trace changes. 
-
-
-NB: you do not need to set up the code on local and make the web app run. It will not run as its not a complete web app. This is purely to assess you thoughts about code, formatting, logic etc
-
-
-===== So expected output is a GitHub link with either =====
-
-1. Readme described above (point X above) + refactored code 
-OR
-2. Readme described above (point X above) + refactored core + a unit test of the code that we have sent
-
-Thank you!
-
-
+- we dopn't need to give or re Declare models here. its already declared in controller class like did in current
+  repository like "Request $request" dont need to add Request before $request

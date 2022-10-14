@@ -89,7 +89,7 @@ class BookingRepository extends BaseRepository
      * @param $user_id
      * @return array
      */
-    public function getUsersJobsHistory($user_id, Request $request)
+    public function getUsersJobsHistory($request)
     {
         $page = $request->get('page');
         if (isset($page)) {
@@ -97,7 +97,7 @@ class BookingRepository extends BaseRepository
         } else {
             $pagenum = "1";
         }
-        $cuser = User::find($user_id);
+        $cuser = User::find($request->user_id);
         $usertype = '';
         $emergencyJobs = array();
         $noramlJobs = array();
@@ -738,7 +738,7 @@ class BookingRepository extends BaseRepository
      * @param $data
      * @return mixed
      */
-    public function updateJob($id, $data, $cuser)
+    public function updateJob($id, $data)
     {
         $job = Job::find($id);
 
@@ -776,7 +776,7 @@ class BookingRepository extends BaseRepository
 
         $job->admin_comments = $data['admin_comments'];
 
-        $this->logger->addInfo('USER #' . $cuser->id . '(' . $cuser->name . ')' . ' has been updated booking <a class="openjob" href="/admin/jobs/' . $id . '">#' . $id . '</a> with data:  ', $log_data);
+        $this->logger->addInfo('USER #' . $data->id . '(' . $data->name . ')' . ' has been updated booking <a class="openjob" href="/admin/jobs/' . $id . '">#' . $id . '</a> with data:  ', $log_data);
 
         $job->reference = $data['reference'];
 
@@ -1377,14 +1377,14 @@ class BookingRepository extends BaseRepository
      * @param $data
      * @param $user
      */
-    public function acceptJob($data, $user)
+    public function acceptJob($data)
     {
 
         $adminemail = config('app.admin_email');
         $adminSenderEmail = config('app.admin_sender_email');
 
-        $cuser = $user;
-        $job_id = $data['job_id'];
+        $cuser = $data->__authenticatedUser;
+        $job_id = $data->job_id;
         $job = Job::findOrFail($job_id);
         if (!Job::isTranslatorAlreadyBooked($job_id, $cuser->id, $job->due)) {
             if ($job->status == 'pending' && Job::insertTranslatorJobRel($cuser->id, $job_id)) {
