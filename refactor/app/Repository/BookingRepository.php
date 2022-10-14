@@ -130,7 +130,7 @@ class BookingRepository extends BaseRepository
 
         $immediatetime = 5;
         $consumer_type = $user->userMeta->consumer_type;
-        if ($user->user_type == env('CUSTOMER_ROLE_ID')) {
+        if ($user->user_type == config('constant.CUSTOMER_ROLE_ID')) {
             $cuser = $user;
 
             if (!isset($data['from_language_id'])) {
